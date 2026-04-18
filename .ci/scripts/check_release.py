@@ -64,9 +64,7 @@ def current_version(repo: Repo, commitish: str) -> Version:
     return Version(current_version)
 
 
-def check_pyproject_dependencies(
-    repo: Repo, from_commit: str, to_commit: str
-) -> list[str]:
+def check_pyproject_dependencies(repo: Repo, from_commit: str, to_commit: str) -> list[str]:
     try:
         new_pyproject = tomllib.loads(repo.git.show(f"{to_commit}:pyproject.toml"))
         try:
@@ -84,9 +82,7 @@ def check_pyproject_dependencies(
     except Exception as e:
         print(f"WARNING: Comparing the dependencies in pyproject.toml failed. ({e})")
         # Gathering more details failed.
-        return [
-            "pyproject.toml changed somehow (PLEASE check if dependencies are affected)."
-        ]
+        return ["pyproject.toml changed somehow (PLEASE check if dependencies are affected)."]
 
 
 def main(options: argparse.Namespace, template_config: dict[str, t.Any]) -> int:
@@ -104,15 +100,12 @@ def main(options: argparse.Namespace, template_config: dict[str, t.Any]) -> int:
     # Warning: This will not work if branch names contain "/" but we don't really care here.
     heads = [h.split("/")[-1] for h in repo.git.branch("--remote").split("\n")]
     available_branches = sorted(
-        {h for h in heads if re.fullmatch(RELEASE_BRANCH_REGEX, h)},
-        key=lambda ver: Version(ver),
+        {h for h in heads if re.fullmatch(RELEASE_BRANCH_REGEX, h)}, key=lambda ver: Version(ver)
     ) + [DEFAULT_BRANCH]
 
     branches = options.branches
     if branches == "supported":
-        tc = yaml.safe_load(
-            repo.git.show(f"{upstream_default_branch}:template_config.yml")
-        )
+        tc = yaml.safe_load(repo.git.show(f"{upstream_default_branch}:template_config.yml"))
         branches = set(tc["supported_release_branches"])
         latest_release_branch = tc["latest_release_branch"]
         if latest_release_branch is not None:
@@ -135,9 +128,7 @@ def main(options: argparse.Namespace, template_config: dict[str, t.Any]) -> int:
         if branch != DEFAULT_BRANCH:
             # Check if a Z release is needed
             reasons = []
-            changes = repo.git.ls_tree(
-                "-r", "--name-only", f"{remote}/{branch}", "CHANGES/"
-            )
+            changes = repo.git.ls_tree("-r", "--name-only", f"{remote}/{branch}", "CHANGES/")
             z_changelog = False
             for change in changes.split("\n"):
                 # Check each changelog file to make sure everything checks out
@@ -154,25 +145,15 @@ def main(options: argparse.Namespace, template_config: dict[str, t.Any]) -> int:
 
             last_tag = repo.git.describe("--tags", "--abbrev=0", f"{remote}/{branch}")
             req_txt_diff = repo.git.diff(
-                f"{last_tag}",
-                f"{remote}/{branch}",
-                "--name-only",
-                "--",
-                "requirements.txt",
+                f"{last_tag}", f"{remote}/{branch}", "--name-only", "--", "requirements.txt"
             )
             if req_txt_diff:
                 reasons.append("requirements.txt")
             pyproject_diff = repo.git.diff(
-                f"{last_tag}",
-                f"{remote}/{branch}",
-                "--name-only",
-                "--",
-                "pyproject.toml",
+                f"{last_tag}", f"{remote}/{branch}", "--name-only", "--", "pyproject.toml"
             )
             if pyproject_diff:
-                reasons.extend(
-                    check_pyproject_dependencies(repo, last_tag, f"{remote}/{branch}")
-                )
+                reasons.extend(check_pyproject_dependencies(repo, last_tag, f"{remote}/{branch}"))
 
             if reasons:
                 curr_version = Version(last_tag)

@@ -86,9 +86,7 @@ def print_changes(doc_files: list[str], not_doc_files: list[str]) -> None:
 
 def get_args() -> tuple[str, str]:
     """Parse command line arguments and validate them."""
-    parser = argparse.ArgumentParser(
-        description="Check if CI can skip tests for a git branch"
-    )
+    parser = argparse.ArgumentParser(description="Check if CI can skip tests for a git branch")
     parser.add_argument("git_root", help="The root directory of the git project")
     parser.add_argument("reference_branch", help="The branch to compare against")
     args = parser.parse_args()

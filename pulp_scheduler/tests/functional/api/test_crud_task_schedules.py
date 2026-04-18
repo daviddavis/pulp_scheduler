@@ -1,4 +1,3 @@
-import json
 import uuid
 
 import pytest
@@ -20,9 +19,7 @@ def test_crud_task_schedule(scheduler_bindings, task_schedule_factory):
     assert schedule.pulp_href is not None
 
     # READ
-    read_schedule = scheduler_bindings.SchedulerTaskSchedulesApi.read(
-        schedule.pulp_href
-    )
+    read_schedule = scheduler_bindings.SchedulerTaskSchedulesApi.read(schedule.pulp_href)
     assert read_schedule.name == name
     assert read_schedule.task_name == schedule.task_name
 
@@ -58,7 +55,7 @@ def test_crud_task_schedule(scheduler_bindings, task_schedule_factory):
 def test_list_task_schedules(scheduler_bindings, task_schedule_factory):
     """Test listing and filtering task schedules."""
     name = str(uuid.uuid4())
-    schedule = task_schedule_factory(name=name)
+    task_schedule_factory(name=name)
 
     # LIST with filter
     results = scheduler_bindings.SchedulerTaskSchedulesApi.list(name=name)

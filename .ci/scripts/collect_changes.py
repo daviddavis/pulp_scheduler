@@ -25,6 +25,7 @@ from pathlib import Path
 from git import GitCommandError, Repo
 from packaging.version import parse as parse_version
 
+
 PYPI_PROJECT = "pulp_scheduler"
 
 # Read Towncrier settings
@@ -52,9 +53,7 @@ DATE_REGEX = r"[0-9]{4}-[0-9]{2}-[0-9]{2}"
 TITLE_REGEX = (
     "("
     + re.escape(
-        TITLE_FORMAT.format(
-            name="NAME_REGEX", version="VERSION_REGEX", project_date="DATE_REGEX"
-        )
+        TITLE_FORMAT.format(name="NAME_REGEX", version="VERSION_REGEX", project_date="DATE_REGEX")
     )
     .replace("NAME_REGEX", NAME_REGEX)
     .replace("VERSION_REGEX", VERSION_CAPTURE_REGEX, 1)
@@ -79,17 +78,13 @@ def _tokenize_changes(splits):
 def split_changelog(changelog):
     preamble, rest = changelog.split(START_STRING, maxsplit=1)
     split_rest = re.split(TITLE_REGEX, rest)
-    return preamble + START_STRING + split_rest[0], list(
-        _tokenize_changes(split_rest[1:])
-    )
+    return preamble + START_STRING + split_rest[0], list(_tokenize_changes(split_rest[1:]))
 
 
 def main():
     repo = Repo(os.getcwd())
     remote = repo.remotes[0]
-    branches = [
-        ref for ref in remote.refs if re.match(r"^([0-9]+)\.([0-9]+)$", ref.remote_head)
-    ]
+    branches = [ref for ref in remote.refs if re.match(r"^([0-9]+)\.([0-9]+)$", ref.remote_head)]
     branches.sort(key=lambda ref: parse_version(ref.remote_head), reverse=True)
     branches = [ref.name for ref in branches]
 
@@ -129,24 +124,17 @@ def main():
 
     if yanked_versions:
         for change in main_changes:
-            if (
-                change[0] in yanked_versions
-                and "YANKED" not in change[1].split("\n")[0]
-            ):
+            if change[0] in yanked_versions and "YANKED" not in change[1].split("\n")[0]:
                 reason = yanked_versions[change[0]]
                 version = str(change[0])
                 change[1] = change[1].replace(version, "YANKED " + version, count=1)
                 if reason:
-                    change[1] = change[1].replace(
-                        "\n", f"\n\nYank reason: {reason}\n", count=1
-                    )
+                    change[1] = change[1].replace("\n", f"\n\nYank reason: {reason}\n", count=1)
                 changed = True
 
     new_length = len(main_changes)
     if old_length < new_length or changed:
-        print(
-            f"{new_length - old_length} new versions have been added (or something has changed)."
-        )
+        print(f"{new_length - old_length} new versions have been added (or something has changed).")
         with open(CHANGELOG_FILE, "w") as fp:
             fp.write(preamble)
             for change in main_changes:
