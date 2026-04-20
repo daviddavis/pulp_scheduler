@@ -1,5 +1,7 @@
 # pulp-scheduler
 
+> **Warning:** This is a community plugin and is not officially supported. Scheduling tasks incorrectly can cause serious issues in your Pulp instance. Always test in a development environment first before applying changes to production.
+
 A Pulp plugin that exposes full CRUD operations for `TaskSchedule` resources.
 
 Pulpcore ships a read-only `TaskScheduleViewSet` (list + retrieve). This plugin
