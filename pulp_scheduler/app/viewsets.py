@@ -37,10 +37,13 @@ class SchedulerTaskScheduleViewSet(
     DEFAULT_ACCESS_POLICY = {
         "statements": [
             {
+                "action": ["list", "retrieve", "my_permissions"],
+                "principal": "authenticated",
+                "effect": "allow",
+                "condition": "has_model_or_domain_or_obj_perms:core.view_taskschedule",
+            },
+            {
                 "action": [
-                    "list",
-                    "retrieve",
-                    "my_permissions",
                     "create",
                     "update",
                     "partial_update",
@@ -51,12 +54,15 @@ class SchedulerTaskScheduleViewSet(
                 ],
                 "principal": "authenticated",
                 "effect": "allow",
-                "condition": [
-                    "has_model_perms:core.change_taskschedule",
-                    "has_model_perms:core.delete_taskschedule",
-                ],
+                "condition": "has_model_or_domain_or_obj_perms:core.change_taskschedule",
             },
         ],
         "queryset_scoping": {"function": "scope_queryset"},
     }
-    LOCKED_ROLES = {}
+    LOCKED_ROLES = {
+        "core.taskschedule_admin": [
+            "core.view_taskschedule",
+            "core.change_taskschedule",
+        ],
+        "core.taskschedule_viewer": ["core.view_taskschedule"],
+    }
