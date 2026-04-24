@@ -40,8 +40,8 @@ site_name: PulpScheduler Client
 site_description: Scheduler bindings
 site_author: Pulp Team
 site_url: https://docs.pulpproject.org/pulp_scheduler_client/
-repo_name: pulp/pulp_scheduler
-repo_url: https://github.com/pulp/pulp_scheduler
+repo_name: daviddavis/pulp_scheduler
+repo_url: https://github.com/daviddavis/pulp_scheduler
 theme: readthedocs
 DOCSYAML
 

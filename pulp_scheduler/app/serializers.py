@@ -3,8 +3,8 @@ from gettext import gettext as _
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
-from pulpcore.app.models import TaskSchedule
-from pulpcore.app.serializers import IdentityField, ModelSerializer, RelatedField
+from pulpcore.plugin.models import TaskSchedule
+from pulpcore.plugin.serializers import IdentityField, ModelSerializer, RelatedField
 
 
 class SchedulerTaskScheduleSerializer(ModelSerializer):

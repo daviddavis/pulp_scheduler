@@ -1,7 +1,7 @@
 from rest_framework import mixins
 
-from pulpcore.app.models import TaskSchedule
-from pulpcore.app.viewsets import NamedModelViewSet, RolesMixin
+from pulpcore.plugin.models import TaskSchedule
+from pulpcore.plugin.viewsets import NamedModelViewSet, RolesMixin
 
 from .serializers import SchedulerTaskScheduleSerializer
 
