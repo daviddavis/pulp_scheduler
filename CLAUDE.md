@@ -38,6 +38,14 @@ pulpcore & pulp-file functional tests require both client bindings to be install
 
 **Always** use the `oci-env` to run the functional and unit tests.
 
+## Linting
+
+Run `ruff check .` against each change and fix any reported problems before committing.
+
+```bash
+ruff check .
+```
+
 ## Modifying template_config.yml
 
 Use the `plugin-template` tool after any changes made to `template_config.yml`.
