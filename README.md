@@ -2,22 +2,22 @@
 
 > **Warning:** This is a community plugin and is not officially supported. Scheduling tasks incorrectly can cause serious issues in your Pulp instance. Always test in a development environment first before applying changes to production.
 
-A Pulp plugin that exposes full CRUD operations for `TaskSchedule` resources.
+A Pulp plugin that introduces `TaskPlan` — a named, ordered pipeline of tasks
+dispatched sequentially.
 
-Pulpcore ships a read-only `TaskScheduleViewSet` (list + retrieve). This plugin
-adds a writable viewset so that admins can create, update, and delete task
-schedules through the REST API.
+A `TaskPlan` owns one or more `TaskPlanStep` rows. Each step records the
+`task_name`, `task_args`, `task_kwargs`, and any `reserved_resources` to use
+when dispatching that step. Plans are immutable after creation: to change a
+plan, delete it and create a new one.
 
 ## Endpoints
 
 | Method | URL | Description |
 |--------|-----|-------------|
-| GET | `/pulp/api/v3/scheduler/task-schedules/` | List task schedules |
-| POST | `/pulp/api/v3/scheduler/task-schedules/` | Create a task schedule |
-| GET | `/pulp/api/v3/scheduler/task-schedules/<pk>/` | Retrieve a task schedule |
-| PUT | `/pulp/api/v3/scheduler/task-schedules/<pk>/` | Update a task schedule |
-| PATCH | `/pulp/api/v3/scheduler/task-schedules/<pk>/` | Partial update a task schedule |
-| DELETE | `/pulp/api/v3/scheduler/task-schedules/<pk>/` | Delete a task schedule |
+| GET | `/pulp/api/v3/scheduler/task-plans/` | List task plans |
+| POST | `/pulp/api/v3/scheduler/task-plans/` | Create a task plan (with steps) |
+| GET | `/pulp/api/v3/scheduler/task-plans/<pk>/` | Retrieve a task plan |
+| DELETE | `/pulp/api/v3/scheduler/task-plans/<pk>/` | Delete a task plan |
 
 ## Installation
 

@@ -21,15 +21,22 @@ def scheduler_bindings(_api_client_set, bindings_cfg):
 
 
 @pytest.fixture
-def task_schedule_factory(scheduler_bindings, add_to_cleanup):
-    """A factory to generate a TaskSchedule with auto-cleanup."""
+def task_plan_factory(scheduler_bindings, add_to_cleanup):
+    """A factory to generate a TaskPlan with auto-cleanup."""
 
-    def _create_task_schedule(**kwargs):
+    def _create_task_plan(**kwargs):
         kwargs.setdefault("name", str(uuid.uuid4()))
-        kwargs.setdefault("task_name", "pulpcore.app.tasks.orphan_cleanup")
-        kwargs.setdefault("dispatch_interval", "P1D")
-        schedule = scheduler_bindings.SchedulerTaskSchedulesApi.create(kwargs)
-        add_to_cleanup(scheduler_bindings.SchedulerTaskSchedulesApi, schedule.pulp_href)
-        return schedule
+        kwargs.setdefault(
+            "steps",
+            [
+                {
+                    "index": 0,
+                    "task_name": "pulpcore.app.tasks.orphan_cleanup",
+                },
+            ],
+        )
+        plan = scheduler_bindings.SchedulerTaskPlansApi.create(kwargs)
+        add_to_cleanup(scheduler_bindings.SchedulerTaskPlansApi, plan.pulp_href)
+        return plan
 
-    return _create_task_schedule
+    return _create_task_plan

@@ -1,38 +1,40 @@
 from rest_framework import mixins
 
-from pulpcore.plugin.models import TaskSchedule
 from pulpcore.plugin.viewsets import NamedModelViewSet, RolesMixin
 
-from .serializers import SchedulerTaskScheduleSerializer
+from pulp_scheduler.app.models import TaskPlan
+from pulp_scheduler.app.serializers import TaskPlanSerializer
 
 
-class SchedulerTaskScheduleViewSet(
+class TaskPlanViewSet(
     NamedModelViewSet,
     mixins.CreateModelMixin,
     mixins.RetrieveModelMixin,
     mixins.ListModelMixin,
-    mixins.UpdateModelMixin,
     mixins.DestroyModelMixin,
     RolesMixin,
 ):
     """
-    A ViewSet for managing TaskSchedules with full CRUD support.
+    A ViewSet for managing TaskPlans.
+
+    Plans are created with their full set of steps and are immutable thereafter; to
+    change a plan, delete it and create a new one.
     """
 
-    queryset = TaskSchedule.objects.all()
-    endpoint_name = "task-schedules"
+    queryset = TaskPlan.objects.all().prefetch_related("steps")
+    endpoint_name = "task-plans"
 
     @classmethod
     def endpoint_pieces(cls):
-        return ["scheduler", "task-schedules"]
+        return ["scheduler", "task-plans"]
 
-    serializer_class = SchedulerTaskScheduleSerializer
+    serializer_class = TaskPlanSerializer
     ordering = "-pulp_created"
     filterset_fields = {
         "name": ["exact", "contains"],
-        "task_name": ["exact", "contains"],
+        "state": ["exact", "in"],
     }
-    queryset_filtering_required_permission = "core.view_taskschedule"
+    queryset_filtering_required_permission = "scheduler.view_taskplan"
 
     DEFAULT_ACCESS_POLICY = {
         "statements": [
@@ -40,13 +42,11 @@ class SchedulerTaskScheduleViewSet(
                 "action": ["list", "retrieve", "my_permissions"],
                 "principal": "authenticated",
                 "effect": "allow",
-                "condition": "has_model_or_domain_or_obj_perms:core.view_taskschedule",
+                "condition": "has_model_or_domain_or_obj_perms:scheduler.view_taskplan",
             },
             {
                 "action": [
                     "create",
-                    "update",
-                    "partial_update",
                     "destroy",
                     "list_roles",
                     "add_role",
@@ -54,15 +54,17 @@ class SchedulerTaskScheduleViewSet(
                 ],
                 "principal": "authenticated",
                 "effect": "allow",
-                "condition": "has_model_or_domain_or_obj_perms:core.change_taskschedule",
+                "condition": "has_model_or_domain_or_obj_perms:scheduler.change_taskplan",
             },
         ],
         "queryset_scoping": {"function": "scope_queryset"},
     }
     LOCKED_ROLES = {
-        "core.taskschedule_admin": [
-            "core.view_taskschedule",
-            "core.change_taskschedule",
+        "scheduler.taskplan_admin": [
+            "scheduler.view_taskplan",
+            "scheduler.change_taskplan",
+            "scheduler.delete_taskplan",
+            "scheduler.manage_roles_taskplan",
         ],
-        "core.taskschedule_viewer": ["core.view_taskschedule"],
+        "scheduler.taskplan_viewer": ["scheduler.view_taskplan"],
     }
